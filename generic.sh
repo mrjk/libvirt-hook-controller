@@ -1,8 +1,15 @@
 #!/bin/bash
+#
+# Libvirt Hook Controller
+# =========================
+# Little tool to manage libivrt hooks in an easy way. Supp
+#
+# Author: mrjk
+# License: MIT
+# Date: 05/2021
+
 
 set -eu
-
-# Libvirt Hook Controller
 
 HOOKS="
 /etc/libvirt/hooks/daemon
@@ -12,7 +19,7 @@ HOOKS="
 /etc/libvirt/hooks/network
 "
 APP_NAME="libvirt-hooks"
-APP_CONF_DIR=/etc/libvirt
+APP_CONF_DIR=/etc/libvirt/hooks/conf
 FAIL_ON_ERROR=false
 
 main ()
@@ -28,28 +35,28 @@ main ()
         stdin=$(cat -)
     fi
 
-
-
+    # Guess the hook name from symlink file
     local script="${BASH_SOURCE[0]}"
     local hook=${script##*/}
 
-    logger -s "$APP_NAME: Run hook: $operation $hook for $object"
+    logger -s "$APP_NAME: Hook: $operation $hook for $object"
 
     # Assemble config
     local config=$(cat "$APP_CONF_DIR/rules.conf" "$APP_CONF_DIR/rules.d"/*.conf 2>/dev/null)
-
     config=$(grep -E "^(($hook)|(\*));" <<< "$config" | sort | uniq | cut -f2- -d";")
     config=$(grep -E "^(($operation)|(\*));" <<< "$config" | sort | uniq | cut -f2- -d";")
     config=$(grep -E "^(($object)|(\*));" <<< "$config" | sort | uniq | cut -f2- -d";")
     config=$(sed 's/^\*;/50;/' <<< "$config" | sort -h -k1,1 -k2,2 -t";" )
     config=$( cut -f2- -d";"  <<< "$config")
 
-    logger -s  "Config:
-$config"
+#    logger -s  "Config:
+#$config"
 
+    # Execute commands
     while read cmd; do
         logger -s "$APP_NAME: Execute: $cmd $@"
 
+        # Execute command
         set +e
         local rc=0
         if [[ "$args" == '-' ]]; then
@@ -60,6 +67,7 @@ $config"
         rc=$?
         set -e
 
+        # Check result
         if [[ "$rc" -ne 0 ]]; then
             if $FAIL_ON_ERROR; then
                 logger -s "$APP_NAME: An error occured, got return code: $rc"
@@ -69,24 +77,8 @@ $config"
             fi
         fi
 
-        true
-
     done <<< "$config"
 
-
-    #[ -f "$DNSMASQ_CONFIG" ] || echo "# Managed by $0" > "$DNSMASQ_CONFIG"
-
-    #case "$action" in
-    #    started)
-    #        net_started $@
-    #        ;;
-    #    stopped)
-    #        net_stopped $@
-    #        ;;
-    #    *)
-    #        logger -s "$APP_NAME: No action ($action) for $net_name"
-    #        ;;
-    #esac
 }
 
 
