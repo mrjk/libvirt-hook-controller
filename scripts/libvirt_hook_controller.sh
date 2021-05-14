@@ -8,14 +8,6 @@
 # ---------------
 # - https://libvirt.org/hooks.html
 #
-#
-# Installation:
-# ---------------
-# You just have to symlink libvirt hooks to this script. In bash, you can install it this way:
-#   for i in /etc/libvirt/hooks/{daemon,libxl,lxc,network,qemu} ; do ln -s $PWD/libvirt_hook_controller.sh $i ; done
-# Then check your journalctl to see hooks events.
-#
-#
 # Usage:
 # ---------------
 # Libvirt Hook Controller works with one or more configuration files. By default
@@ -31,9 +23,6 @@
 # Configuration examples:
 # ---------------
 #     network;started;*;*;/usr/local/update_dns hook add
-#     network;stopped;*;5;/usr/local/update_dns hook remove
-#     network;stopped;*;10;/usr/local/update_dns hook remove
-#     network;stopped;*;4;/usr/local/update_dns hook remove
 #     network;stopped;*;60;/usr/local/update_dns hook remove
 #     qemu;started;*;*;/usr/local/bin/ensure_ipvsadm
 #     *;*;*;99;/usr/anyevent
