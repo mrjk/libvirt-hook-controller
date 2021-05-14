@@ -18,7 +18,7 @@
 #
 # Usage:
 # ---------------
-# Libvirt_hook_controller works with one or more configuration files. By default
+# Libvirt Hook Controller works with one or more configuration files. By default
 # it looks into the file `rules.conf` and `rules.d/*.conf` in `/etc/libvirt/hooks/conf`.
 # The configuration files are basically a csv file with some fields:
 #   - hook: The name of the hook to match. Can use '*'.

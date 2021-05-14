@@ -3,7 +3,7 @@
 set -eu
  
 APP="Libvirt Network Hook"
-DNSMASQ_CONFIG=/etc/dnsmasq.d/libvirt-hook.conf
+DNSMASQ_CONFIG=${DNSMASQ_CONFIG:-/etc/dnsmasq.d/libvirt-hook.conf}
 
 net_stopped ()
 {
@@ -97,7 +97,7 @@ main ()
 
     script="${BASH_SOURCE[0]}"
     event=${script##*/}
-    logger -s "$APP: Source: $SOURCE"
+    logger -s "$APP: Source: $script"
 
     [ -f "$DNSMASQ_CONFIG" ] || echo "# Managed by $0" > "$DNSMASQ_CONFIG"
 
