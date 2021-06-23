@@ -79,7 +79,7 @@ net_started ()
     logger -s "$APP: Adding dnsmasq config for: $net_domain => $net_ip"
     dns_conf="server=/$net_domain/$net_ip#53"
     if grep -q "^server=/$net_domain/" "$DNSMASQ_CONFIG"; then
-        sed -i "s@^server=/$net_domain/@$dns_conf@" "$DNSMASQ_CONFIG"
+        sed -i "s@^server=/$net_domain/.*@$dns_conf@" "$DNSMASQ_CONFIG"
     else
         echo "$dns_conf" >> "$DNSMASQ_CONFIG"
     fi
@@ -99,7 +99,7 @@ main ()
     event=${script##*/}
     logger -s "$APP: Source: $script"
 
-    [ -f "$DNSMASQ_CONFIG" ] || echo "# Managed by $0" > "$DNSMASQ_CONFIG"
+    [ -f "$DNSMASQ_CONFIG" ] || echo "# Managed by $BASH_SOURCE via $0" > "$DNSMASQ_CONFIG"
 
     case "$action" in
         started)
